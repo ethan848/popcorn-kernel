@@ -109,7 +109,7 @@ inline int redirect_##syscall(LIST_SYSCALL_ARGS(__VA_ARGS__))		\
 	req->remote_ws = ws->id;					\
 	SET_REQ_PARAMS_ARGS(REVERSE(NUM_ARGS(__VA_ARGS__), __VA_ARGS__))\
 	req->call_type = syscall_type;					\
-	ret = pcn_kmsg_send(PCN_KMSG_TYPE_SYSCALL_FWD, 0, req,		\
+	ret = pcn_kmsg_send(PCN_KMSG_TYPE_SYSCALL_FWD, (my_nid==0)?1:0, req,		\
 			    sizeof(*req));				\
 	kfree(req);							\
 	rep = wait_at_station(ws);					\
