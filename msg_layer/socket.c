@@ -6,15 +6,16 @@
  *  Ho-Ren (Jack) Chuang <horenc@vt.edu>
  *  Sang-Hoon Kim <sanghoon@vt.edu>
  */
-
+#include <linux/seq_file.h>
+#include <linux/proc_fs.h>
 #include <linux/kthread.h>
 #include <popcorn/stat.h>
-
 #include "ring_buffer.h"
 #include "common.h"
-
 #define PORT 30467
 #define MAX_SEND_DEPTH	1024
+#define NIPQUAD(addr) ((unsigned char *)&addr)[0],((unsigned char *)&addr)[1],((unsigned char *)&addr)[2],((unsigned char *)&addr)[3]
+#define NIPQUAD_FMT "%u.%u.%u.%u"
 
 enum {
 	SEND_FLAG_POSTED = 0,
@@ -293,7 +294,7 @@ void sock_kmsg_stat(struct seq_file *seq, void *v)
 #else
 				0ULL,
 #endif
-				"socket");
+                                "socket");
 	}
 }
 
@@ -310,6 +311,50 @@ struct pcn_kmsg_transport transport_socket = {
 	.done = sock_kmsg_done,
 };
 
+
+
+static int __show_peers(struct seq_file *seq, void *v)
+{	
+	int i;
+	char* myself = " ";	
+	for (i = 0; i < MAX_NUM_NODES; i++) 
+	{
+		if (i == my_nid) myself = "*";
+		seq_printf(seq, "%s %3d  "NIPQUAD_FMT"  %s\n",
+				myself,
+                                i,
+                                NIPQUAD(ip_table[i]),
+                                "NODE_IP");
+		myself = " ";
+	}
+	return 0;
+}
+
+
+static int __open_peers(struct inode *inode, struct file *file)
+{
+        return single_open(file, &__show_peers, NULL);
+}
+
+
+
+static struct file_operations peers_ops = {
+        .owner = THIS_MODULE,
+        .open = __open_peers,
+        .read = seq_read,
+        .llseek  = seq_lseek,
+        .release = single_release,
+};
+static struct proc_dir_entry *proc_entry = NULL;
+static int peers_init(void)
+{
+	proc_entry = proc_create("popcorn_peers",  0444, NULL, &peers_ops);
+        if (proc_entry == NULL) {
+                printk(KERN_ERR"cannot create proc_fs entry for popcorn stats\n");
+                return -ENOMEM;
+        }
+        return 0;
+}
 
 static struct task_struct * __init __start_handler(const int nid, const char *type, int (*handler)(void *data))
 {
@@ -558,6 +603,8 @@ static int __init init_kmsg_sock(void)
 	broadcast_my_node_info(i);
 
 	PCNPRINTK("Ready on TCP/IP\n");
+	peers_init();
+	
 	return 0;
 
 out_exit:
