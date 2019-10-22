@@ -60,16 +60,14 @@ bool __put_task_remote(struct remote_context *rc);
 	pid_t remote_pid;\
 	pid_t origin_pid;\
 	unsigned int personality;\
-	/* \
 	unsigned long def_flags;\
 	sigset_t remote_blocked;\
 	sigset_t remote_real_blocked;\
 	sigset_t remote_saved_sigmask;\
-	struct sigpending remote_pending;\
+	struct sigpending remote_pending;\ 
 	unsigned long sas_ss_sp;\
 	size_t sas_ss_size;\
-	struct k_sigaction action[_NSIG]; \
-	*/ \
+	struct k_sigaction action[_NSIG];\
 	struct field_arch arch;
 DEFINE_PCN_KMSG(back_migration_request_t, BACK_MIGRATION_FIELDS);
 
@@ -96,16 +94,14 @@ typedef struct popcorn_fd {
 	unsigned int personality;\
 	unsigned long def_flags;\
 	char exe_path[512];\
-    fd_t fds[64];\
-	/* \
+        fd_t fds[64];\
 	sigset_t remote_blocked;\
 	sigset_t remote_real_blocked;\
 	sigset_t remote_saved_sigmask;\
-	struct sigpending remote_pending;\
+	struct sigpending remote_pending;\ 
 	unsigned long sas_ss_sp;\
 	size_t sas_ss_size;\
 	struct k_sigaction action[_NSIG];\
-	*/ \
 	struct field_arch arch;
 DEFINE_PCN_KMSG(clone_request_t, CLONE_FIELDS);
 
@@ -338,8 +334,6 @@ enum pcn_syscall_types
 	PCN_SYSCALL_WRITEV,
 	PCN_SYSCALL_FSTAT,
 	PCN_SYSCALL_SENDFILE64,
-	PCN_SYSCALL_SELECT,
-	PCN_SYSCALL_FCNTL,
 	PCN_NUM_SYSCALLS
 };
 
