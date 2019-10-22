@@ -455,12 +455,6 @@ static int __do_back_migration(struct task_struct *tsk, int dst_nid, void __user
 	req->sas_ss_sp = tsk->sas_ss_sp;
 	req->sas_ss_size = tsk->sas_ss_size;
 	memcpy(req->action, tsk->sighand->action, sizeof(req->action));
-printk("%s sig action %ld, %ld, %ld, %ld, %ld\n ",
-        __func__, sizeof(req->action),
-        (unsigned long) &(req->action[0].sa.sa_handler) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_mask) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_flags) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_restorer) - (unsigned long) &(req->action[0].sa));
 
 	ret = copy_from_user(&req->arch.regsets, uregs,
 			regset_size(get_popcorn_node_arch(dst_nid)));
@@ -549,12 +543,6 @@ static int remote_thread_main(void *_args)
 	current->sas_ss_sp = req->sas_ss_sp;
 	current->sas_ss_size = req->sas_ss_size;
 	memcpy(current->sighand->action, req->action, sizeof(req->action));
-printk("%s sig action %ld, %ld, %ld, %ld, %ld\n ",
-        __func__, sizeof(req->action),
-        (unsigned long) &(req->action[0].sa.sa_handler) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_mask) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_flags) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_restorer) - (unsigned long) &(req->action[0].sa));
 	
 	__pair_remote_task();
 
@@ -956,12 +944,6 @@ static int __request_clone_remote(int dst_nid, struct task_struct *tsk, void __u
 	req->sas_ss_sp = tsk->sas_ss_sp;
 	req->sas_ss_size = tsk->sas_ss_size;
 	memcpy(req->action, tsk->sighand->action, sizeof(req->action));
-printk("%s sig action %ld, %ld, %ld, %ld, %ld\n ",
-        __func__, sizeof(req->action),
-        (unsigned long) &(req->action[0].sa.sa_handler) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_mask) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_flags) - (unsigned long) &(req->action[0].sa),
-        (unsigned long) &(req->action[0].sa.sa_restorer) - (unsigned long) &(req->action[0].sa));
 
 
 	/* Register sets from userspace */
