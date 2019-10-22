@@ -371,7 +371,7 @@ static void process_remote_task_exit(remote_task_exit_t *req)
 
 	exit_code = req->exit_code;
 	pcn_kmsg_done(req);
-
+	printk(KERN_INFO "exit_code: %d",exit_code);
 	if (exit_code & CSIGNAL) {
 		force_sig(exit_code & CSIGNAL, tsk);
 	}
@@ -447,7 +447,7 @@ static int __do_back_migration(struct task_struct *tsk, int dst_nid, void __user
 
 	req->personality = tsk->personality;
 
-	/*
+
 	req->remote_blocked = tsk->blocked;
 	req->remote_real_blocked = tsk->real_blocked;
 	req->remote_saved_sigmask = tsk->saved_sigmask;
@@ -455,7 +455,12 @@ static int __do_back_migration(struct task_struct *tsk, int dst_nid, void __user
 	req->sas_ss_sp = tsk->sas_ss_sp;
 	req->sas_ss_size = tsk->sas_ss_size;
 	memcpy(req->action, tsk->sighand->action, sizeof(req->action));
-	*/
+printk("%s sig action %ld, %ld, %ld, %ld, %ld\n ",
+        __func__, sizeof(req->action),
+        (unsigned long) &(req->action[0].sa.sa_handler) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_mask) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_flags) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_restorer) - (unsigned long) &(req->action[0].sa));
 
 	ret = copy_from_user(&req->arch.regsets, uregs,
 			regset_size(get_popcorn_node_arch(dst_nid)));
@@ -534,18 +539,23 @@ static int remote_thread_main(void *_args)
 	/* Inject thread info here */
 	restore_thread_info(&req->arch, true);
 
-	/* XXX: Skip restoring signals and handlers for now
+	/* XXX: Skip restoring signals and handlers for now */
 	sigorsets(&current->blocked, &current->blocked, &req->remote_blocked);
 	sigorsets(&current->real_blocked,
 			&current->real_blocked, &req->remote_real_blocked);
 	sigorsets(&current->saved_sigmask,
 			&current->saved_sigmask, &req->remote_saved_sigmask);
-	current->pending = req->remote_pending;
+	current->pending.signal = req->remote_pending.signal;
 	current->sas_ss_sp = req->sas_ss_sp;
 	current->sas_ss_size = req->sas_ss_size;
 	memcpy(current->sighand->action, req->action, sizeof(req->action));
-	*/
-
+printk("%s sig action %ld, %ld, %ld, %ld, %ld\n ",
+        __func__, sizeof(req->action),
+        (unsigned long) &(req->action[0].sa.sa_handler) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_mask) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_flags) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_restorer) - (unsigned long) &(req->action[0].sa));
+	
 	__pair_remote_task();
 
 	PSPRINTK("\n####### MIGRATED - [%d/%d] from [%d/%d]\n",
@@ -938,7 +948,7 @@ static int __request_clone_remote(int dst_nid, struct task_struct *tsk, void __u
 
 	req->personality = tsk->personality;
 
-	/* Signals and handlers
+	/* Signals and handlers */
 	req->remote_blocked = tsk->blocked;
 	req->remote_real_blocked = tsk->real_blocked;
 	req->remote_saved_sigmask = tsk->saved_sigmask;
@@ -946,7 +956,13 @@ static int __request_clone_remote(int dst_nid, struct task_struct *tsk, void __u
 	req->sas_ss_sp = tsk->sas_ss_sp;
 	req->sas_ss_size = tsk->sas_ss_size;
 	memcpy(req->action, tsk->sighand->action, sizeof(req->action));
-	*/
+printk("%s sig action %ld, %ld, %ld, %ld, %ld\n ",
+        __func__, sizeof(req->action),
+        (unsigned long) &(req->action[0].sa.sa_handler) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_mask) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_flags) - (unsigned long) &(req->action[0].sa),
+        (unsigned long) &(req->action[0].sa.sa_restorer) - (unsigned long) &(req->action[0].sa));
+
 
 	/* Register sets from userspace */
 	ret = copy_from_user(&req->arch.regsets, uregs,
