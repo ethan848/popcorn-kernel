@@ -79,7 +79,7 @@ bool __init identify_myself(void)
                 }
 */
 		temp=strlen(ip) + ip;
-		while (tem = strchrnul(ip, ':')) {
+		while (tem = strchrnul(ip, ',')) {
 			*tem = 0;
 			ip_table[k++] = in_aton(ip);
 			ip=tem+1;
