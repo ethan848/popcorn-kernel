@@ -64,7 +64,7 @@ bool __put_task_remote(struct remote_context *rc);
 	sigset_t remote_blocked;\
 	sigset_t remote_real_blocked;\
 	sigset_t remote_saved_sigmask;\
-	struct sigpending remote_pending;\ 
+	struct sigpending remote_pending;\
 	unsigned long sas_ss_sp;\
 	size_t sas_ss_size;\
 	struct k_sigaction action[_NSIG];\
@@ -77,32 +77,32 @@ typedef struct popcorn_fd {
 } fd_t;
 
 #define CLONE_FIELDS \
-	pid_t origin_tgid;\
-	pid_t origin_pid;\
+	pid_t origin_tgid; \
+	pid_t origin_pid; \
 	unsigned long task_size; \
 	unsigned long stack_start; \
-	unsigned long env_start;\
-	unsigned long env_end;\
-	unsigned long arg_start;\
-	unsigned long arg_end;\
-	unsigned long start_brk;\
-	unsigned long brk;\
-	unsigned long start_code ;\
-	unsigned long end_code;\
-	unsigned long start_data;\
-	unsigned long end_data;\
-	unsigned int personality;\
-	unsigned long def_flags;\
-	char exe_path[512];\
-        fd_t fds[64];\
-	sigset_t remote_blocked;\
-	sigset_t remote_real_blocked;\
-	sigset_t remote_saved_sigmask;\
-	struct sigpending remote_pending;\ 
-	unsigned long sas_ss_sp;\
-	size_t sas_ss_size;\
-	struct k_sigaction action[_NSIG];\
-	struct field_arch arch;
+	unsigned long env_start; \
+	unsigned long env_end; \
+	unsigned long arg_start; \
+	unsigned long arg_end; \
+	unsigned long start_brk; \
+	unsigned long brk; \
+	unsigned long start_code; \
+	unsigned long end_code; \
+	unsigned long start_data; \
+	unsigned long end_data; \
+	unsigned int personality; \
+	unsigned long def_flags; \
+	char exe_path[512]; \
+        fd_t fds[64]; \
+	sigset_t remote_blocked; \
+	sigset_t remote_real_blocked; \
+	sigset_t remote_saved_sigmask; \
+	struct sigpending remote_pending; \
+	unsigned long sas_ss_sp; \
+	size_t sas_ss_size; \
+	struct k_sigaction action[_NSIG]; \
+	struct field_arch arch
 DEFINE_PCN_KMSG(clone_request_t, CLONE_FIELDS);
 
 /**
@@ -334,6 +334,8 @@ enum pcn_syscall_types
 	PCN_SYSCALL_WRITEV,
 	PCN_SYSCALL_FSTAT,
 	PCN_SYSCALL_SENDFILE64,
+	PCN_SYSCALL_SELECT,
+	PCN_SYSCALL_FCNTL,
 	PCN_NUM_SYSCALLS
 };
 

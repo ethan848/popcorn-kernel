@@ -1086,6 +1086,7 @@ ret:
 static int send_signal(int sig, struct siginfo *info, struct task_struct *t,
 			int group)
 {
+	 if(sig ==35) printk("%s have 35",__func__);
 	int from_ancestor_ns = 0;
 
 #ifdef CONFIG_PID_NS
